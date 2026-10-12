@@ -7,9 +7,57 @@
 
 export const SCENES = [
   {
+    id: 'prologue',
+    title: 'Prologue: The Night Before',
+    intro: 'A freezing winter night. Carl is cat-sitting Princess Donut, his ex-girlfriend Bea\'s prize-winning Persian. He is up late, smoking at an open window, wearing almost nothing.',
+    beats: [
+      {
+        text: 'Donut bolts past him and leaps out the window into the snow!',
+        input: 'left',
+        lead: 1400,
+        success: 'Carl climbs out after her. No pants. Bad idea. Only idea.',
+        death: 'Carl hesitates. A champion Persian vanishes into the night. Bea is going to kill him.',
+      },
+      {
+        text: 'Donut scrambles onto a parked car, just out of reach. Grab her!',
+        input: 'action',
+        success: 'Got her. She is furious about it.',
+        death: 'Carl lunges, slips on the ice, and lies there looking at the sky. Donut looks down at him with contempt.',
+      },
+      {
+        text: 'The ground heaves. Behind Carl, the whole apartment building folds in on itself!',
+        input: 'down',
+        window: 1200,
+        success: 'Carl hits the snow. The building is gone. So is every building he can see.',
+        death: 'Carl stands there gawking. The debris does not care.',
+      },
+      {
+        text: 'Something bounces out of the dust cloud and rolls straight at him. It is a head. Just a head.',
+        input: 'up',
+        window: 1100,
+        success: 'Carl hops over it. He will think about that later. Much later.',
+        death: 'Carl trips over the head and cracks his own on the curb. Ironic.',
+      },
+      {
+        text: 'The cold is winning. Carl sinks to his knees. Get up!',
+        input: 'up',
+        lead: 1600,
+        success: 'Carl drags himself upright, Donut stuffed in his jacket, complaining.',
+        death: 'Carl sits down in the snow, just for a minute. He becomes a lawn ornament.',
+      },
+      {
+        text: 'A column of light stabs down out of the sky across the street: a stairwell, breathing warm air!',
+        input: 'right',
+        success: 'Carl staggers toward the light.',
+        death: 'Wrong way. Nothing out there but snow, and dark, and then not even that.',
+      },
+    ],
+    clear: 'Carl stumbles down out of the cold. A cheerful voice in his head welcomes him to the dungeon. Earth, it explains, has been acquired.',
+  },
+  {
     id: 'stairwell',
     title: 'Floor 1: The Stairwell',
-    intro: 'The world ended an hour ago. Now it is a game show. Carl, in boxers and a leather jacket, starts down the stairs. Princess Donut rides his shoulder, judging everything.',
+    intro: 'The world ended ten minutes ago. Now it is a game show. Carl, in boxers and a jacket, keeps heading down the stairs. Princess Donut rides his shoulder, judging everything.',
     beats: [
       {
         text: 'The step under Carl crumbles away into darkness!',

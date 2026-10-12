@@ -59,9 +59,108 @@ const speedLines = (x, y) => `<path d="M${x} ${y} h10 M${x + 3} ${y + 5} h12 M${
 const label = (x, y, text) => `<text x="${x}" y="${y}" font-size="8" fill="currentColor" stroke="none" font-family="inherit">${text}</text>`;
 const hole = (x, y, w) => `<path d="M${x} ${y} q${w / 2} 14 ${w} 0 q${-w / 2} 4 ${-w} 0z" fill="currentColor" opacity=".25"/>`;
 
+// Outdoor kit: ground at y=78.
+const GROUND = 78;
+const ground = () => `<path d="M0 ${GROUND} H160"/>`;
+const snow = (n = 24, opacity = 0.7) =>
+  `<g fill="currentColor" stroke="none" opacity="${opacity}">` +
+  Array.from({ length: n }, (_, i) => `<circle cx="${(i * 53) % 160}" cy="${(i * 29) % 74 + 2}" r=".8"/>`).join('') + '</g>';
+const building = (x, y, w, h) => {
+  let d = `<rect x="${x}" y="${y}" width="${w}" height="${h}"/>`;
+  for (let wy = y + 6; wy < y + h - 8; wy += 12)
+    for (let wx = x + 5; wx < x + w - 6; wx += 12) d += `<rect x="${wx}" y="${wy}" width="5" height="6" opacity=".6"/>`;
+  return d;
+};
+const rubble = (x, w) => `<path d="M${x} ${GROUND} l6 -10 l5 4 l7 -14 l6 8 l8 -6 l5 9 l7 -5 l${w - 44} ${15}" />` +
+  `<path d="M${x + 10} ${GROUND - 4} l4 -3 M${x + 26} ${GROUND - 8} l5 2 M${x + 40} ${GROUND - 3} l3 -4" opacity=".6"/>`;
+const dust = (x, y) => `<path d="M${x} ${y} q5 -10 14 -4 q6 -9 15 -1 q9 -3 10 6 q6 6 -2 10 h-33 q-9 -5 -4 -11z" stroke-dasharray="3 2" opacity=".6"/>`;
+const severedHead = (x, y) => `<g><circle cx="${x}" cy="${y - 3}" r="3.5"/><path d="M${x - 2} ${y - 4.5} l1.2 1.2 m0 -1.2 l-1.2 1.2 M${x + 0.8} ${y - 4.5} l1.2 1.2 m0 -1.2 l-1.2 1.2"/></g>`;
+const lying = (x) => carl(x, GROUND + 12, 'stand', 90);
+const carlHoldingDonut = (x, y, pose = 'stand') => carl(x, y, pose) + donut(x + 3, y - 12);
+const lightBeam = (x) => `<path d="M${x - 4} 0 L${x - 12} ${GROUND} M${x + 4} 0 L${x + 12} ${GROUND}" opacity=".7"/>` +
+  `<path d="M${x - 12} ${GROUND} L${x + 12} ${GROUND} L${x + 8} ${GROUND + 6} L${x - 8} ${GROUND + 6}z" fill="currentColor" opacity=".3"/>` +
+  `<path d="M${x - 6} ${GROUND + 2} h12 M${x - 4} ${GROUND + 4} h8" opacity=".8"/>`;
+const windowFrame = (x, y, w, h) => `<rect x="${x}" y="${y}" width="${w}" height="${h}"/><path d="M${x} ${y + h + 3} h${w}" />`;
+POSES.kneel = {
+  arms: (x, y) => `M${x - 7} ${y - 13} L${x} ${y - 20} L${x + 6} ${y - 13}`,
+  legs: (x, y) => `M${x} ${y - 10} L${x + 7} ${y - 10} L${x + 7} ${y - 2} M${x} ${y - 10} L${x - 6} ${y - 3}`,
+};
+
 // --- Scene 1: The Stairwell ----------------------------------------------
 
 const SKETCHES = {
+  // --- Prologue: before the collapse -------------------------------------
+  'prologue/0/setup': svg(
+    windowFrame(80, 14, 50, 44) + `<g clip-path="inset(0)">${snow(14)}</g>` +
+    carl(40, 84) + `<path d="M46 72 l8 -3"/><path d="M55 66 q3 -4 0 -7 q-3 -3 1 -7" opacity=".5"/>` +
+    `<g transform="rotate(-25 104 34)">${donut(104, 38)}</g>` + `<path d="M84 44 h-8 M86 50 h-10" opacity=".6"/>`,
+  ),
+  'prologue/0/success': svg(
+    snow() + building(10, 4, 70, 74) + ground() +
+    carl(98, 60, 'armsUp', -15) + label(110, 30, 'BRRR') + donut(140, GROUND) + `<path d="M120 76 h6 M118 72 h5" opacity=".6"/>`,
+  ),
+  'prologue/0/death': svg(
+    windowFrame(80, 14, 50, 44) + snow(14) + carl(40, 84) + label(10, 22, 'Bea is going') + label(10, 32, 'to kill me.'),
+  ),
+  'prologue/1/setup': svg(
+    snow() + ground() + `<path d="M90 ${GROUND} v-12 h8 l8 -10 h22 l8 10 h8 v12" /><circle cx="102" cy="${GROUND}" r="5"/><circle cx="134" cy="${GROUND}" r="5"/>` +
+    donut(118, 56) + carl(64, GROUND, 'kick') + `<path d="M70 58 l10 -2" />`,
+  ),
+  'prologue/1/success': svg(
+    snow() + ground() + `<path d="M100 ${GROUND} v-12 h8 l8 -10 h22 l8 10 h8 v12" opacity=".5"/>` +
+    carlHoldingDonut(64, GROUND) + label(76, 36, 'got her'),
+  ),
+  'prologue/1/death': svg(
+    snow() + ground() + `<path d="M90 ${GROUND} v-12 h8 l8 -10 h22 l8 10 h8 v12" /><circle cx="102" cy="${GROUND}" r="5"/><circle cx="134" cy="${GROUND}" r="5"/>` +
+    donut(118, 56) + lying(60) + `<path d="M40 ${GROUND - 2} q6 -6 12 0" opacity=".5"/>` + label(100, 30, 'nope'),
+  ),
+  'prologue/2/setup': svg(
+    snow() + building(60, 6, 80, 72) + `<path d="M90 6 l4 16 l-6 14 l7 18 M120 6 l-3 20 l5 12" stroke-width="2"/>` + ground() +
+    carlHoldingDonut(30, GROUND) + label(4, 14, 'RUMBLE'),
+  ),
+  'prologue/2/success': svg(
+    snow() + rubble(56, 100) + dust(70, 40) + dust(110, 30) + ground() + lying(26) + donut(42, GROUND),
+  ),
+  'prologue/2/death': svg(
+    snow() + rubble(10, 140) + dust(40, 40) + dust(90, 34) +
+    `<path d="M74 ${GROUND - 12} v-10 l-2 -3 M74 ${GROUND - 22} l0 -4 M74 ${GROUND - 22} l2 -3"/>`,
+  ),
+  'prologue/3/setup': svg(
+    snow() + rubble(90, 70) + dust(96, 46) + ground() + carlHoldingDonut(40, GROUND) +
+    severedHead(80, GROUND) + `<path d="M100 ${GROUND - 3} q-6 -10 -14 -2" stroke-dasharray="2 3" opacity=".6"/>` + label(4, 14, 'thump thump thump'),
+  ),
+  'prologue/3/success': svg(
+    snow() + rubble(90, 70) + ground() + carl(40, GROUND - 12, 'armsUp') + donut(43, GROUND - 24) + severedHead(46, GROUND) +
+    `<path d="M30 ${GROUND - 4} h-8 M30 ${GROUND - 8} h-6" opacity=".6"/>`,
+  ),
+  'prologue/3/death': svg(
+    snow() + rubble(90, 70) + ground() + lying(40) + severedHead(62, GROUND) + label(52, 50, 'bonk'),
+  ),
+  'prologue/4/setup': svg(
+    snow(48, 0.9) + ground() + `<g transform="translate(0 6)">${carl(70, GROUND, 'kneel')}</g>` + donut(73, GROUND - 6) +
+    `<rect x="96" y="10" width="58" height="16" opacity=".8"/>` + label(100, 21, 'FROSTBITE'),
+  ),
+  'prologue/4/success': svg(
+    snow(48, 0.9) + ground() + carlHoldingDonut(70, GROUND) + label(84, 40, 'ugh. walk.'),
+  ),
+  'prologue/4/death': svg(
+    snow(48, 0.9) + ground() + `<g transform="translate(0 6)">${carl(70, GROUND, 'kneel')}</g>` +
+    `<rect x="56" y="44" width="30" height="${GROUND - 44}" stroke-dasharray="1 2"/><path d="M58 44 v5 M64 44 v4 M72 44 v6 M80 44 v4" />`,
+  ),
+  'prologue/5/setup': svg(
+    `<rect x="0" y="0" width="160" height="90" fill="currentColor" opacity=".12" stroke="none"/>` + snow() + ground() +
+    lightBeam(120) + carlHoldingDonut(40, GROUND) + label(64, 20, '!'),
+  ),
+  'prologue/5/success': svg(
+    `<rect x="0" y="0" width="160" height="90" fill="currentColor" opacity=".12" stroke="none"/>` + snow() + ground() +
+    lightBeam(120) + `<g transform="rotate(12 90 ${GROUND})">${carl(90, GROUND, 'run')}</g>` + donut(96, GROUND - 12) + speedLines(70, GROUND - 22),
+  ),
+  'prologue/5/death': svg(
+    `<rect x="0" y="0" width="160" height="90" fill="currentColor" opacity=".3" stroke="none"/>` + snow(48) + ground() +
+    lightBeam(150) + `<g transform="scale(.6) translate(20 52)">${carl(20, GROUND)}</g>` + label(50, 30, 'wrong way'),
+  ),
+
+  // --- Scene 1: The Stairwell ---
   'stairwell/0/setup': svg(
     stairs() + carlWithDonut(72, stepTop(4)) +
     // crack under Carl's step, chunks falling
