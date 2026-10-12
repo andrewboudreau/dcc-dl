@@ -1,0 +1,11 @@
+{
+  "name": "dcc-dl",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A Dragon's Lair-style reaction game set in the Dungeon Crawler Carl universe (fan project).",
+  "type": "module",
+  "scripts": {
+    "start": "npx --yes serve -l 8080 .",
+    "test": "node --test"
+  }
+}
