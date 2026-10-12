@@ -20,8 +20,7 @@ Open http://localhost:8080 to play, or http://localhost:8080/storyboard.html for
 
 ## Deploy
 
-Every push runs the tests. Pushes to the default branch also deploy to GitHub Pages (`.github/workflows/pages.yml`).
-One-time setup: in repo **Settings → Pages**, set **Source** to **GitHub Actions**.
+Every push runs the tests. Pushes to `main` also deploy to GitHub Pages (`.github/workflows/pages.yml`).
 
 ## Test
 
