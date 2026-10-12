@@ -22,6 +22,8 @@
     figcaption { font-size: .8rem; line-height: 1.4; margin-top: .4rem; }
     figcaption b { display: block; font-size: .7rem; color: var(--dim); letter-spacing: .05em; }
     .death b { color: #a3322a; }
+    .cutscene b { color: #6a5acd; }
+    .system { border: 1px solid var(--ink); outline: 1px solid var(--ink); outline-offset: 2px; padding: .3rem .4rem; display: block; margin-top: .2rem; }
     .success b { color: #3d7a3f; }
     @media (max-width: 640px) { .beat { grid-template-columns: 1fr; } }
   </style>
@@ -40,12 +42,12 @@
     const GLYPH = { up: '↑', down: '↓', left: '←', right: '→', action: '✊' };
     const esc = (s) => s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
 
-    const panel = (scene, i, frame, caption, badge = '') => {
+    const panel = (scene, i, frame, caption, badge = '', system = false) => {
       const art = sketch(scene.id, i, frame);
       const tag = `${scene.id.toUpperCase()} ${i + 1}${'ABC'['setup success death'.split(' ').indexOf(frame)]} · ${frame.toUpperCase()}`;
       return `<figure class="${frame}">
         <div class="panel ${art ? '' : 'tbd'}">${art ?? 'sketch TBD'}${badge ? `<span class="badge">${badge}</span>` : ''}</div>
-        <figcaption><b>${tag}</b>${esc(caption)}</figcaption>
+        <figcaption><b>${tag}</b>${system ? `<span class="system">${esc(caption)}</span>` : esc(caption)}</figcaption>
       </figure>`;
     };
 
@@ -53,8 +55,10 @@
       <section>
         <h2>${esc(scene.title)}</h2>
         <p class="intro">${esc(scene.intro)}</p>
-        ${scene.beats.map((b, i) => `<div class="beat">
-          ${panel(scene, i, 'setup', b.text, GLYPH[b.input])}
+        ${scene.beats.map((b, i) => !b.input
+          ? `<div class="beat cutscene">${panel(scene, i, 'setup', b.text, '', b.system).replace('· SETUP', '· CUTSCENE')}</div>`
+          : `<div class="beat">
+          ${panel(scene, i, 'setup', b.text, GLYPH[b.input], b.system)}
           ${panel(scene, i, 'success', b.success ?? '')}
           ${panel(scene, i, 'death', b.death)}
         </div>`).join('')}

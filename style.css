@@ -75,6 +75,14 @@ body {
 [data-phase="cue"] #timer { visibility: visible; }
 
 [data-phase="cue"] { background: #1f1a0c; }
+[data-system="yes"] #text {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--gold);
+  outline: 1px solid var(--gold);
+  outline-offset: 3px;
+  color: var(--gold);
+  min-height: 0;
+}
 [data-phase="success"] #text { color: var(--good); }
 [data-phase="death"], [data-phase="gameover"] { background: #2a0b0b; }
 [data-phase="death"] #title, [data-phase="gameover"] #title { color: var(--blood); }

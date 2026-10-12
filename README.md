@@ -37,9 +37,12 @@ npm test
 | `src/sketches.js` | Rough storyboard sketches (inline SVG), keyed by scene/beat/frame. Shown in-game and on the storyboard. |
 | `src/main.js` | Browser glue: input, rendering, sound blips. |
 | `storyboard.html` | Every beat as three panels (setup, success, death), with a placeholder wherever a sketch is missing. |
+| `docs/book-1-notes.md` | Book 1 story notes: what we've confirmed, what's from memory, open questions, and which scenes are canon. |
 | `test/` | `node --test` tests for the engine. |
 
 Each beat in a scene is `{ text, input, death, success?, timeout?, lead?, window? }`.
+A beat with no `input` is a cutscene, shown for `hold` ms (any key skips). Add `system: true` to style it as a System AI message.
+Dev shortcut: `?scene=<id>` jumps straight to a scene, e.g. `/?scene=registration`.
 The engine waits `lead` ms, flashes the cue, then gives the player `window` ms to press `input`.
 
 ## Ideas / next steps

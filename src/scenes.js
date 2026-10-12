@@ -3,6 +3,8 @@
 // Wrong input or timeout plays `death` (or `timeout` if set) and restarts the scene.
 //
 // Optional per-beat: lead, window, success, timeout.
+// A beat with no `input` is a cutscene: shown for `hold` ms (any key skips).
+// `system: true` styles the text as a System AI message.
 // Later: an `art`/`video` field per beat for real animation.
 
 export const SCENES = [
@@ -79,7 +81,44 @@ export const SCENES = [
         death: 'Donut is very upset. Briefly.',
       },
     ],
-    clear: 'NEW ACHIEVEMENT! Stair Master. Reward: you get to keep walking.',
+    clear: 'The stairs keep going down. And down.',
+  },
+  {
+    id: 'registration',
+    title: 'Floor 1: Welcome, Crawler',
+    intro: 'The stairs finally end. The air down here is warm and damp, and it smells like old stone.',
+    beats: [
+      {
+        text: 'A long stone corridor, lit by torches that nobody lit. Somewhere, water drips. Carl is very aware he is not wearing pants.',
+        hold: 3600,
+      },
+      {
+        system: true,
+        text: 'The voice in his head lays out the rules. Eighteen floors. Every floor has a timer. When it runs out, the floor collapses, and anyone still on it goes with it.',
+        hold: 4600,
+      },
+      {
+        system: true,
+        text: 'NEW ACHIEVEMENT! You brought a pet into the dungeon. Reward: Legendary Pet Box.',
+      },
+      {
+        system: true,
+        text: 'NEW ACHIEVEMENT! Early arrival. Reward: Silver Adventurer Box. NEW ACHIEVEMENT! Nothing in your pack. Reward: Bronze Adventurer Box.',
+        hold: 4200,
+      },
+      {
+        system: true,
+        text: 'A countdown blinks into the corner of Carl\'s vision: the time left before Floor 1 collapses.',
+      },
+      {
+        text: 'Above him, the stairwell grinds shut, stone sliding over stone. He is right under it!',
+        input: 'down',
+        window: 1300,
+        success: 'Carl dives clear as the slab slams home. There is no going back up.',
+        death: 'Carl gets sandwiched between Earth and the dungeon. The audience winces, then laughs.',
+      },
+    ],
+    clear: 'Down the corridor, a door with a sign: TUTORIAL GUILD. Something is waiting on the other side.',
   },
   {
     id: 'goblins',

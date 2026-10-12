@@ -56,7 +56,7 @@ const ratPile = (x, y, n, spread) =>
   Array.from({ length: n }, (_, i) => rat(x + ((i * 37) % spread) - spread / 2, y - ((i * 13) % 9), 0.8)).join('');
 
 const speedLines = (x, y) => `<path d="M${x} ${y} h10 M${x + 3} ${y + 5} h12 M${x} ${y + 10} h9" opacity=".6"/>`;
-const label = (x, y, text) => `<text x="${x}" y="${y}" font-size="8" fill="currentColor" stroke="none" font-family="inherit">${text}</text>`;
+const label = (x, y, text, size = 8) => `<text x="${x}" y="${y}" font-size="${size}" fill="currentColor" stroke="none" font-family="inherit">${text}</text>`;
 const hole = (x, y, w) => `<path d="M${x} ${y} q${w / 2} 14 ${w} 0 q${-w / 2} 4 ${-w} 0z" fill="currentColor" opacity=".25"/>`;
 
 // Outdoor kit: ground at y=78.
@@ -85,6 +85,19 @@ POSES.kneel = {
   arms: (x, y) => `M${x - 7} ${y - 13} L${x} ${y - 20} L${x + 6} ${y - 13}`,
   legs: (x, y) => `M${x} ${y - 10} L${x + 7} ${y - 10} L${x + 7} ${y - 2} M${x} ${y - 10} L${x - 6} ${y - 3}`,
 };
+
+// Dungeon kit.
+const corridor = () =>
+  `<path d="M0 0 L60 30 V62 L0 90 M160 0 L100 30 V62 L160 90 M60 30 H100 M60 62 H100" />` +
+  `<path d="M24 34 v8 M136 34 v8" /><path d="M24 34 q-2 -4 0 -7 q2 3 0 7 M136 34 q-2 -4 0 -7 q2 3 0 7" style="color:var(--donut)"/>`;
+const sysBox = (x, y, w, h, lines) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" stroke-width="1"/>` +
+  `<rect x="${x + 2}" y="${y + 2}" width="${w - 4}" height="${h - 4}" stroke-width=".5" opacity=".6"/>` +
+  lines.map((t, i) => label(x + 5, y + 10 + i * 8, t, 6.5)).join('');
+const lootBox = (x, y, s = 1, rays = false) =>
+  `<path d="M${x} ${y} l${8 * s} ${-4 * s} l${8 * s} ${4 * s} l${-8 * s} ${4 * s}z M${x} ${y} v${9 * s} l${8 * s} ${4 * s} v${-9 * s} M${x + 16 * s} ${y} v${9 * s} l${-8 * s} ${4 * s}"/>` +
+  (rays ? `<path d="M${x + 8 * s} ${y - 8 * s} v-6 M${x - 4 * s} ${y - 2 * s} l-5 -3 M${x + 20 * s} ${y - 2 * s} l5 -3" opacity=".7"/>` : '');
+const slab = (y) => `<rect x="20" y="${y}" width="80" height="10" fill="currentColor" fill-opacity=".25"/>`;
+
 
 // --- Scene 1: The Stairwell ----------------------------------------------
 
@@ -159,6 +172,17 @@ const SKETCHES = {
     `<rect x="0" y="0" width="160" height="90" fill="currentColor" opacity=".3" stroke="none"/>` + snow(48) + ground() +
     lightBeam(150) + `<g transform="scale(.6) translate(20 52)">${carl(20, GROUND)}</g>` + label(50, 30, 'wrong way'),
   ),
+
+  // --- Registration: arrival on Floor 1 -------------------------------------
+  'registration/0/setup': svg(corridor() + carlWithDonut(80, 66) + `<path d="M110 40 v4 M112 52 v3" opacity=".5"/>` + label(112, 18, 'drip')),
+  'registration/1/setup': svg(corridor() + carlWithDonut(50, 84) + sysBox(80, 8, 74, 32, ['18 FLOORS', 'TIMERS', "DON'T BE LATE"])),
+  'registration/2/setup': svg(corridor() + carl(50, 84) + donut(70, 84) + lootBox(92, 64, 1.3, true) + sysBox(70, 6, 84, 18, ['ACHIEVEMENT!']) + label(10, 20, 'legendary?')),
+  'registration/3/setup': svg(corridor() + carlWithDonut(40, 84) + lootBox(76, 70) + lootBox(104, 70) + label(80, 64, 'S') + label(108, 64, 'B') + sysBox(70, 6, 84, 18, ['ACHIEVEMENT! x2'])),
+  'registration/4/setup': svg(corridor() + carlWithDonut(40, 84) + sysBox(84, 8, 70, 28, ['FLOOR 1', 'D:HH:MM:SS']) + `<path d="M48 54 l30 -20" stroke-dasharray="2 3" opacity=".5"/>`),
+  'registration/5/setup': svg(stairs() + slab(14) + `<path d="M40 30 v6 l-2 -2 m2 2 l2 -2 M80 30 v6 l-2 -2 m2 2 l2 -2"/>` + carlWithDonut(72, stepTop(4)) + label(110, 20, 'GRIND')),
+  'registration/5/success': svg(corridor() + `<rect x="60" y="30" width="40" height="32" fill="currentColor" fill-opacity=".25"/>` + lying(80) + donut(98, GROUND) + label(66, 22, 'SLAM')),
+  'registration/5/death': svg(`<rect x="0" y="40" width="160" height="14" fill="currentColor" fill-opacity=".3"/>` +
+    `<path d="M74 54 v10 l-2 3 M74 64 v4 M74 64 l2 3"/>` + donut(110, 84) + label(20, 30, 'crunch')),
 
   // --- Scene 1: The Stairwell ---
   'stairwell/0/setup': svg(

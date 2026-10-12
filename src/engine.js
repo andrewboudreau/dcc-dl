@@ -6,6 +6,7 @@ export const INPUTS = ['up', 'down', 'left', 'right', 'action'];
 
 export const TIMING = {
   intro: 1800,    // scene title card
+  hold: 3200,     // default: how long a cutscene beat (no input) stays up
   lead: 1200,     // default: narration shown before the cue appears
   window: 1500,   // default: time to react once the cue appears
   success: 700,   // pause after a correct move
@@ -34,6 +35,12 @@ export class Game {
     };
   }
 
+  // Jump straight to a scene (dev shortcut, e.g. ?scene=registration).
+  startAt(index, now) {
+    this.reset();
+    this.#beginScene(index, now);
+  }
+
   get scene() {
     return this.scenes[this.state.sceneIndex];
   }
@@ -57,20 +64,17 @@ export class Game {
         if (elapsed >= TIMING.intro) this.#beginBeat(now);
         break;
       case 'lead':
-        if (elapsed >= (this.beat.lead ?? TIMING.lead)) this.#enter('cue', now, this.beat.text, 'cue');
+        if (!this.beat.input) {
+          if (elapsed >= (this.beat.hold ?? TIMING.hold)) this.#nextBeat(now);
+        } else if (elapsed >= (this.beat.lead ?? TIMING.lead)) {
+          this.#enter('cue', now, this.beat.text, 'cue');
+        }
         break;
       case 'cue':
         if (elapsed >= (this.beat.window ?? TIMING.window)) this.#die(this.beat.timeout ?? this.beat.death, now);
         break;
       case 'success':
-        if (elapsed >= TIMING.success) {
-          if (s.beatIndex + 1 < this.scene.beats.length) {
-            s.beatIndex++;
-            this.#beginBeat(now);
-          } else {
-            this.#enter('clear', now, this.scene.clear, 'clear');
-          }
-        }
+        if (elapsed >= TIMING.success) this.#nextBeat(now);
         break;
     }
   }
@@ -85,6 +89,9 @@ export class Game {
         break;
       case 'intro':
         this.#beginBeat(now); // skip the title card
+        break;
+      case 'lead':
+        if (!this.beat.input) this.#nextBeat(now); // skip a cutscene beat
         break;
       case 'cue': {
         const beat = this.beat;
@@ -111,7 +118,7 @@ export class Game {
       case 'victory':
         if (elapsed >= TIMING.minHold) this.reset();
         break;
-      // 'lead' and 'success': input ignored. Only the cue window counts.
+      // Action beats ignore input during 'lead' and 'success'. Only the cue window counts.
     }
   }
 
@@ -129,6 +136,15 @@ export class Game {
     this.#enter('lead', now, this.beat.text);
   }
 
+  #nextBeat(now) {
+    if (this.state.beatIndex + 1 < this.scene.beats.length) {
+      this.state.beatIndex++;
+      this.#beginBeat(now);
+    } else {
+      this.#enter('clear', now, this.scene.clear, 'clear');
+    }
+  }
+
   #die(message, now) {
     this.state.lives--;
     this.#enter('death', now, message, 'death');
@@ -144,8 +160,9 @@ export function validateScenes(scenes) {
     if (!Array.isArray(scene.beats) || scene.beats.length === 0) throw new Error(`Scene ${scene.id} has no beats`);
     scene.beats.forEach((beat, i) => {
       const where = `${scene.id} beat ${i}`;
-      if (!INPUTS.includes(beat.input)) throw new Error(`${where}: bad input "${beat.input}"`);
       if (typeof beat.text !== 'string') throw new Error(`${where}: missing text`);
+      if (beat.input === undefined) return; // cutscene beat
+      if (!INPUTS.includes(beat.input)) throw new Error(`${where}: bad input "${beat.input}"`);
       if (typeof beat.death !== 'string') throw new Error(`${where}: missing death`);
     });
   }

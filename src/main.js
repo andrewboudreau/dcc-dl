@@ -13,6 +13,8 @@ const KEYMAP = {
 const GLYPH = { up: '↑', down: '↓', left: '←', right: '→', action: '✊' };
 
 const game = new Game(SCENES);
+const startScene = SCENES.findIndex((sc) => sc.id === new URLSearchParams(location.search).get('scene'));
+if (startScene >= 0) game.startAt(startScene, performance.now());
 const $ = (id) => document.getElementById(id);
 const el = {
   stage: $('stage'), art: $('art'), title: $('title'), text: $('text'), cue: $('cue'),
@@ -80,6 +82,7 @@ function render(now) {
     if (s.lastEvent) SFX[s.lastEvent]?.();
 
     el.stage.dataset.phase = s.phase;
+    el.stage.dataset.system = ['lead', 'cue'].includes(s.phase) && game.beat.system ? 'yes' : '';
     el.title.textContent =
       s.phase === 'title' ? 'DUNGEON CRAWLER CARL' :
       s.phase === 'intro' ? game.scene.title :
@@ -99,7 +102,9 @@ function render(now) {
   }
 
   const held = now - s.phaseStart >= 800;
-  el.prompt.textContent = PROMPTS[s.phase] && (s.phase === 'title' || held) ? PROMPTS[s.phase] : '';
+  const cutscene = s.phase === 'lead' && !game.beat.input;
+  el.prompt.textContent = cutscene ? 'Any key to skip' :
+    PROMPTS[s.phase] && (s.phase === 'title' || held) ? PROMPTS[s.phase] : '';
   el.timerFill.style.width = `${game.windowRemaining(now) * 100}%`;
 }
 
