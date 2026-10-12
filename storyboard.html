@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DCC: Dragon's Lair Storyboard</title>
+  <style>
+    :root { --paper: #f4efe3; --ink: #2b2620; --dim: #7a7064; --donut: #c4661f; --line: #d8cfbd; }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 1.5rem 1rem 3rem; background: var(--paper); color: var(--ink); font-family: ui-monospace, Menlo, Consolas, monospace; }
+    header, section { max-width: 72rem; margin: 0 auto; }
+    h1 { margin: 0 0 .25rem; }
+    header p { margin: 0 0 2rem; color: var(--dim); }
+    h2 { margin: 2.5rem 0 .25rem; border-bottom: 2px solid var(--ink); padding-bottom: .25rem; }
+    .intro, .clear { color: var(--dim); font-style: italic; margin: .5rem 0 1rem; }
+    .beat { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    figure { margin: 0; }
+    .panel { aspect-ratio: 16 / 9; border: 2px solid var(--ink); background: #fffdf7; position: relative; }
+    .panel .sketch { width: 100%; height: 100%; display: block; }
+    .panel.tbd { border-style: dashed; border-color: var(--line); display: grid; place-items: center; color: var(--dim); }
+    .badge { position: absolute; top: 4px; right: 6px; font-size: 1.4rem; font-weight: bold; color: var(--donut); }
+    figcaption { font-size: .8rem; line-height: 1.4; margin-top: .4rem; }
+    figcaption b { display: block; font-size: .7rem; color: var(--dim); letter-spacing: .05em; }
+    .death b { color: #a3322a; }
+    .success b { color: #3d7a3f; }
+    @media (max-width: 640px) { .beat { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>DCC: Dragon's Lair Storyboard</h1>
+    <p>Each row is one beat: what the player sees, what happens if they nail it, and how they die. Generated from <code>src/scenes.js</code> + <code>src/sketches.js</code>.</p>
+  </header>
+  <main id="board"></main>
+
+  <script type="module">
+    import { SCENES } from './src/scenes.js';
+    import { sketch } from './src/sketches.js';
+
+    const GLYPH = { up: '↑', down: '↓', left: '←', right: '→', action: '✊' };
+    const esc = (s) => s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
+
+    const panel = (scene, i, frame, caption, badge = '') => {
+      const art = sketch(scene.id, i, frame);
+      const tag = `${scene.id.toUpperCase()} ${i + 1}${'ABC'['setup success death'.split(' ').indexOf(frame)]} · ${frame.toUpperCase()}`;
+      return `<figure class="${frame}">
+        <div class="panel ${art ? '' : 'tbd'}">${art ?? 'sketch TBD'}${badge ? `<span class="badge">${badge}</span>` : ''}</div>
+        <figcaption><b>${tag}</b>${esc(caption)}</figcaption>
+      </figure>`;
+    };
+
+    document.getElementById('board').innerHTML = SCENES.map((scene) => `
+      <section>
+        <h2>${esc(scene.title)}</h2>
+        <p class="intro">${esc(scene.intro)}</p>
+        ${scene.beats.map((b, i) => `<div class="beat">
+          ${panel(scene, i, 'setup', b.text, GLYPH[b.input])}
+          ${panel(scene, i, 'success', b.success ?? '')}
+          ${panel(scene, i, 'death', b.death)}
+        </div>`).join('')}
+        <p class="clear">${esc(scene.clear)}</p>
+      </section>`).join('');
+  </script>
+</body>
+</html>

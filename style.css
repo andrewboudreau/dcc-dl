@@ -6,6 +6,7 @@
   --gold: #f2b134;
   --blood: #c0392b;
   --good: #4caf50;
+  --donut: #f2b134;
 }
 
 * { box-sizing: border-box; }
@@ -44,15 +45,28 @@ body {
   transition: background 0.2s;
 }
 
+#screen {
+  position: relative;
+  width: min(36rem, 92vw);
+  aspect-ratio: 16 / 9;
+  color: #cfc6b0;
+  border: 1px solid #3a3242;
+  background: #15111a;
+}
+#art .sketch { position: absolute; inset: 0; width: 100%; height: 100%; }
+
 #title { margin: 0; color: var(--gold); font-size: clamp(1.4rem, 5vw, 2.6rem); min-height: 1.2em; }
 #text { max-width: 40rem; margin: 0; font-size: clamp(1rem, 3vw, 1.35rem); line-height: 1.5; min-height: 4.5em; }
 #prompt { margin: 0; color: var(--dim); min-height: 1.5em; animation: pulse 1.2s infinite; }
 
 #cue {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
   font-size: clamp(4rem, 18vw, 8rem);
-  line-height: 1;
-  min-height: 1em;
   color: var(--gold);
+  text-shadow: 0 0 0.3em #000, 0 0 0.1em #000;
 }
 [data-phase="cue"] #cue { animation: flash 0.25s steps(2) infinite; }
 

@@ -1,5 +1,6 @@
 import { Game } from './engine.js';
 import { SCENES } from './scenes.js';
+import { sketch } from './sketches.js';
 
 const KEYMAP = {
   ArrowUp: 'up', KeyW: 'up',
@@ -14,7 +15,7 @@ const GLYPH = { up: '↑', down: '↓', left: '←', right: '→', action: '✊'
 const game = new Game(SCENES);
 const $ = (id) => document.getElementById(id);
 const el = {
-  stage: $('stage'), title: $('title'), text: $('text'), cue: $('cue'),
+  stage: $('stage'), art: $('art'), title: $('title'), text: $('text'), cue: $('cue'),
   timer: $('timer'), timerFill: $('timer-fill'), prompt: $('prompt'),
   lives: $('lives'), score: $('score'), scene: $('scene-name'),
 };
@@ -88,6 +89,9 @@ function render(now) {
     el.text.textContent = s.phase === 'title'
       ? 'Dragon\'s Lair edition. Watch the scene. When the cue flashes, react. Too slow or wrong, and you die.'
       : s.message;
+    const frame = { lead: 'setup', cue: 'setup', success: 'success', death: 'death' }[s.phase];
+    const art = frame && sketch(game.scene.id, s.beatIndex, frame);
+    el.art.innerHTML = art || '';
     el.cue.textContent = s.phase === 'cue' ? GLYPH[game.beat.input] : '';
     el.lives.textContent = '♥'.repeat(Math.max(0, s.lives));
     el.score.textContent = s.score;

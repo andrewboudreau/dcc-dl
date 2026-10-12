@@ -10,7 +10,7 @@ If you're wrong or too slow, you die and replay the scene.
 npm start            # or: python3 -m http.server 8080
 ```
 
-Open http://localhost:8080. Controls: arrows / WASD to move, Space / Enter for action. On touch devices, use the on-screen pad.
+Open http://localhost:8080 to play, or http://localhost:8080/storyboard.html for the storyboard. Controls: arrows / WASD to move, Space / Enter for action. On touch devices, use the on-screen pad.
 
 > The game uses ES modules, so it has to be served over HTTP. Opening `index.html` directly from disk won't work.
 
@@ -26,7 +26,9 @@ npm test
 |---|---|
 | `src/engine.js` | Pure game state machine (phases, timing, lives, score). No DOM, so it's unit-tested. |
 | `src/scenes.js` | Scene and beat data. Add content here. |
+| `src/sketches.js` | Rough storyboard sketches (inline SVG), keyed by scene/beat/frame. Shown in-game and on the storyboard. |
 | `src/main.js` | Browser glue: input, rendering, sound blips. |
+| `storyboard.html` | Every beat as three panels (setup, success, death), with a placeholder wherever a sketch is missing. |
 | `test/` | `node --test` tests for the engine. |
 
 Each beat in a scene is `{ text, input, death, success?, timeout?, lead?, window? }`.
@@ -34,7 +36,7 @@ The engine waits `lead` ms, flashes the cue, then gives the player `window` ms t
 
 ## Ideas / next steps
 
-- Art or animation per beat (canvas sprites or video clips, Dragon's Lair style)
+- Sketch the rest of the storyboard (Goblin Hallway, Dragon's Lair), then replace the sketches with finished art or animation
 - Hard mode: hide the cue arrow so you have to read the scene
 - More floors and a System AI announcer with random quips
 - Achievements and loot boxes between scenes
