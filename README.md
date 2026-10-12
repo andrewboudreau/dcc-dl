@@ -6,6 +6,10 @@ If you're wrong or too slow, you die and replay the scene.
 
 ## Play
 
+Live: https://andrewboudreau.github.io/dcc-dl/ (storyboard: https://andrewboudreau.github.io/dcc-dl/storyboard.html)
+
+To run it locally:
+
 ```sh
 npm start            # or: python3 -m http.server 8080
 ```
@@ -13,6 +17,11 @@ npm start            # or: python3 -m http.server 8080
 Open http://localhost:8080 to play, or http://localhost:8080/storyboard.html for the storyboard. Controls: arrows / WASD to move, Space / Enter for action. On touch devices, use the on-screen pad.
 
 > The game uses ES modules, so it has to be served over HTTP. Opening `index.html` directly from disk won't work.
+
+## Deploy
+
+Every push runs the tests. Pushes to the default branch also deploy to GitHub Pages (`.github/workflows/pages.yml`).
+One-time setup: in repo **Settings → Pages**, set **Source** to **GitHub Actions**.
 
 ## Test
 
